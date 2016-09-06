@@ -23,7 +23,7 @@ package mgl.lab02c2016;
         import java.util.List;
         import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements  RadioGroup.OnCheckedChangeListener{
+public class MainActivity extends AppCompatActivity implements  RadioGroup.OnCheckedChangeListener, View.OnClickListener {
     DecimalFormat f = new DecimalFormat("##.00");
 
     ElementoMenu[] listaBebidas;
@@ -40,19 +40,28 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
     ArrayAdapter<ElementoMenu> adapter;
     ArrayList<ElementoMenu> listaElementos = new ArrayList<>();
 
+    boolean pedidoConfirmado=false;
+    Double total;
+
+    ArrayList<ElementoMenu> listaPedidos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         pedido = (TextView) findViewById(R.id.textViewPedido);
+        pedido.setMovementMethod(new ScrollingMovementMethod());
 
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
         radioGroup.setOnCheckedChangeListener(this);
 
         botonAgregar =(Button) findViewById(R.id.buttonAgregar);
+        botonAgregar.setOnClickListener(this);
         botonConfirmar = (Button) findViewById(R.id.buttonConfirmar);
+        botonConfirmar.setOnClickListener(this);
         botonReiniciar = (Button) findViewById(R.id.buttonReiniciar);
+        botonReiniciar.setOnClickListener(this);
 
         listaProductos =(ListView) findViewById(R.id.listViewProductos);
 
@@ -61,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
         adapter = new ArrayAdapter<ElementoMenu>(
                 this, android.R.layout.simple_list_item_single_choice, listaElementos);
         listaProductos.setAdapter(adapter);
+
+        listaPedidos = new ArrayList<ElementoMenu>();
     }
 
     @Override
@@ -88,6 +99,42 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
         }
 
     }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.buttonAgregar:
+                if(listaProductos.getCheckedItemCount() == 1 && pedidoConfirmado == false){
+                    int posicisionSelec = listaProductos.getCheckedItemPosition();
+                    listaPedidos.add((ElementoMenu) listaProductos.getItemAtPosition(posicisionSelec));
+                    actualizarPedidos();
+                    listaProductos.clearChoices();
+                    listaProductos.setItemChecked(-1,true);
+                }
+                else if (pedidoConfirmado)
+                    Toast.makeText(this,"El pedido ha sido confirmado",Toast.LENGTH_LONG).show();
+                else{
+                    Toast.makeText(this,"Debe seleccionar algo del menu",Toast.LENGTH_LONG).show();
+                }
+                break;
+            case R.id.buttonConfirmar:
+                if(listaPedidos.isEmpty()) {
+                    Toast.makeText(this, "Debe agregar un producto al pedido", Toast.LENGTH_LONG).show();
+                }else {
+                    pedidoConfirmado = true;
+                    Toast.makeText(this, "Pedido confirmado", Toast.LENGTH_LONG).show();
+                    actualizarPedidos();
+                }
+                break;
+            case R.id.buttonReiniciar:
+                listaPedidos.clear();
+                actualizarPedidos();
+                pedidoConfirmado=false;
+                break;
+        }
+    }
+
+
 
     class ElementoMenu {
         private Integer id;
@@ -138,6 +185,25 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
         public String toString() {
             return this.nombre+ "( "+f.format(this.precio)+")";
         }
+    }
+
+    private void actualizarPedidos() {
+        if(listaPedidos.isEmpty()){
+            pedido.setText("");
+        }
+        else{
+            String strElemento = "";
+            total = 0.0;
+            for (ElementoMenu elemento: listaPedidos) {
+                strElemento += elemento.toString() + "\n";
+                total += elemento.getPrecio();
+            }
+            if(pedidoConfirmado)
+                strElemento += "Total: " + total.toString()+"\n";
+            pedido.setText(strElemento);
+            pedido.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private void llenarSpinner(){

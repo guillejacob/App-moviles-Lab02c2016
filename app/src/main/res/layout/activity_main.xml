@@ -107,7 +107,10 @@
         android:id="@+id/textViewPedido"
         android:layout_below="@+id/switch1"
         android:layout_alignParentStart="true"
-        android:layout_alignEnd="@+id/buttonReiniciar" />
+        android:layout_alignEnd="@+id/buttonReiniciar"
+        android:scrollbars="vertical"
+        android:minLines="4"
+        android:maxLines="6"/>
 
     <ListView
         android:layout_width="wrap_content"
@@ -122,6 +125,8 @@
         android:layout_height="wrap_content"
         android:text="@string/reservarMesa"
         android:id="@+id/toggleButton"
+        android:textOn="RESERVAR MESA"
+        android:textOff="RESERVAR MESA"
         android:layout_below="@+id/tituloapp"
         android:layout_alignParentStart="true" />
 
