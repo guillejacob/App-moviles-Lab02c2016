@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
                     listaProductos.setItemChecked(-1,true);
                 }
                 else if (pedidoConfirmado)
-                    Toast.makeText(this,"El pedido ha sido confirmado",Toast.LENGTH_LONG).show();
+                    Toast.makeText(this,"No se puede agregar pedido, ya ha sido confirmado",Toast.LENGTH_LONG).show();
                 else{
                     Toast.makeText(this,"Debe seleccionar algo del menu",Toast.LENGTH_LONG).show();
                 }
@@ -127,6 +127,8 @@ public class MainActivity extends AppCompatActivity implements  RadioGroup.OnChe
                 }
                 break;
             case R.id.buttonReiniciar:
+                listaProductos.clearChoices();
+                listaProductos.setItemChecked(-1,true);
                 listaPedidos.clear();
                 actualizarPedidos();
                 pedidoConfirmado=false;
